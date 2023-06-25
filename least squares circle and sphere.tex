@@ -1,0 +1,271 @@
+\documentclass[11pt,letterpaper,onecolumn]{IEEEtran}
+
+\usepackage{cite}			% cites the references at the end of document
+\usepackage{graphicx}
+\usepackage{float}    		% tables and other floats
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{verbatim}		% comment out large sections similar to /* */
+\usepackage{url}			% for hyperlink to other locations within pdf
+\usepackage{tikz}			% diagrams
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{cancel}			% cross-out terms in math mode
+\usepackage{listings} 		% For source code
+
+% define hyperref settings
+\usepackage{hyperref}
+\hypersetup{
+	bookmarks=true,         % show bookmarks bar?
+	unicode=false,          % non-Latin characters in Acrobat’s bookmarks
+	pdftoolbar=true,        % show Acrobat’s toolbar?
+	pdfmenubar=true,        % show Acrobat’s menu?
+	pdffitwindow=false,     % window fit to page when opened
+	pdfstartview={FitH},    % fits the width of the page to the window
+	pdftitle={My title},    % title
+	pdfauthor={Author},     % author
+	pdfsubject={Subject},   % subject of the document
+	pdfcreator={Creator},   % creator of the document
+	pdfproducer={Producer}, % producer of the document
+	pdfkeywords={keyword1, key2, key3}, % list of keywords
+	pdfnewwindow=true,      % links in new PDF window
+	colorlinks=false,       % false: boxed links; true: colored links
+	linkcolor=red,          % color of internal links (change box color with linkbordercolor)
+	citecolor=green,        % color of links to bibliography
+	filecolor=magenta,      % color of file links
+	urlcolor=cyan           % color of external links
+}
+
+% define source code settings
+\definecolor{mygrey}{gray}{.96} % Light Grey
+\lstset{
+	language=[ISO]C++,              % choose the language of the code ("language=Verilog" is popular as well)
+	tabsize=3,							  % sets the size of the tabs in spaces (1 Tab is replaced with 3 spaces)
+	basicstyle=\tiny,               % the size of the fonts that are used for the code
+	numbers=left,                   % where to put the line-numbers
+	numberstyle=\tiny,              % the size of the fonts that are used for the line-numbers
+	stepnumber=2,                   % the step between two line-numbers. If it's 1 each line will be numbered
+	numbersep=5pt,                  % how far the line-numbers are from the code
+	backgroundcolor=\color{mygrey}, % choose the background color. You must add \usepackage{color}
+	%	%showspaces=false,              % show spaces adding particular underscores
+	%	%showstringspaces=false,        % underline spaces within strings
+	%	%showtabs=false,                % show tabs within strings adding particular underscores
+	frame=single,	                 % adds a frame around the code
+	tabsize=3,	                    % sets default tabsize to 2 spaces
+	captionpos=b,                   % sets the caption-position to bottom
+	breaklines=true,                % sets automatic line breaking
+	breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
+	%	%escapeinside={\%*}{*)},        % if you want to add a comment within your code
+	commentstyle=\color{blue}   % sets the comment style
+}
+
+% define tikzstyle shortcuts
+\usetikzlibrary{positioning,shapes,arrows}
+\tikzstyle{Algo} = [rectangle, rounded corners, minimum width=1 cm, minimum height=1cm, text centered, draw=black]
+\tikzstyle{Process} = [rectangle, minimum width=1 cm, minimum height=1cm, text centered, draw=black, fill=blue!20]
+\tikzstyle{Sum} = [circle, radius = 3 cm, text centered, draw=black]
+\tikzstyle{Arrow} = [thick,->,>=stealth]
+\tikzstyle{Line} = [thick]
+\tikzstyle{Junction} = [coordinate]
+
+\begin{document}
+\title{Least-squares Fit to Circles and Spheres}
+\author{Lisandro Leon}
+\maketitle
+
+%\abstract
+%This is the abstract.
+
+\begin{comment}
+\section{Problem Statement}
+\begin{figure}[!h]
+	\center{
+		\includegraphics[width=0.2\textwidth]
+		{three-link planar serial manipulator.png}
+	}
+	\caption{loop-shape superimposed as a visual tool for controller design}\label{fig2}
+\end{figure}
+\end{comment}
+
+\section{Least-squares formula}
+If a set of simultaneous, linear equations can be formulated as
+\begin{equation}
+\mathbb{A} \mathbf{x} = \mathbf{y},\label{eq0}
+\end{equation}
+and if all the columns of $\mathbb{A}$ are linearly independent, then there exists only one least-squares solution $\hat{\mathbf{x}}$, as defined by equation (\ref{eq1})) (see Ref. \cite{ref1}).
+\begin{comment}
+\begin{equation}
+\mathbb{X}^T \mathbb{X} \mathbb{B} = \mathbb{X}^T \mathbf{y}.\label{eq1}
+\end{equation}
+\end{comment}
+\begin{equation}
+\hat{\mathbf{x}} = \left(\mathbb{A}^T \mathbb{A}\right)^{-1} \mathbb{A}^T \mathbf{y}.\label{eq1}
+\end{equation}
+
+
+\section{General equation for a circle}
+The general equation for a circle is
+\begin{equation}
+\left(x-x_0\right)^2 + \left(y-y_0\right)^2 = r^2,\label{eq2}
+\end{equation}
+where the center of the circle is defined at $\left(x_0, y_0\right)$, and $r$ is its radius.
+Expansion of (\ref{eq2}) yields
+\begin{equation}
+x^2 -2x x_0 +x_0^2 + y^2 -2y y_0 +y_0^2 = r^2\label{eq3}.
+\end{equation}
+By rearranging (\ref{eq3}) so that
+\begin{equation}
+-2x x_0 -2y y_0 +x_0^2 +y_0^2 -r^2 = -\left(x^2 + y^2\right),\label{eq4}
+\end{equation}
+the generalized equation for a circle can be rearranged into the form of the matrix-vector equation (\ref{eq0}).
+
+The variables to be solved ($x_0$, $y_0$, and $r$) must be packed into the vector $\mathbf{x}$.
+Define
+\begin{equation}
+\mathbf{x} = 
+\begin{bmatrix}
+x_0 \\ y_0 \\ x_o^2 + y_0^2 -r^2
+\end{bmatrix}_{ 3 \times 1},
+\end{equation}
+and rearrange equation (\ref{eq4}) so that  
+\begin{equation}
+\begin{bmatrix}
+\begin{array}{c c c}
+-2x &-2y  &+1
+\end{array}
+\end{bmatrix}
+\begin{bmatrix}
+x_0 \\ y_0 \\ x_o^2 + y_0^2 -r^2
+\end{bmatrix} = 
+\begin{bmatrix}
+-\left(x^2 + y^2\right)
+\end{bmatrix}.
+\end{equation}
+For a set of $n$ measurements, the remaining matrices to completely define (\ref{eq2}) in the form of (\ref{eq0}) are
+\begin{equation}
+\mathbb{A} = 
+\begin{bmatrix}
+\begin{array}{c c c}
+-2x_1 &-2y_1 &+1 \\
+-2x_2 &-2y_2 &+1 \\
+-2x_3 &-2y_3 &+1 \\
+\vdots	& \vdots & \vdots \\
+-2x_n &-2y_n &+1 \\
+\end{array}
+\end{bmatrix}_{ n \times 3}
+\end{equation}
+and 
+\begin{equation}
+\mathbf{y} = 
+\begin{bmatrix}
+-\left(x_1^2+y_1^2\right)\\
+-\left(x_2^2+y_2^2\right)\\
+-\left(x_3^2+y_3^2\right)\\
+\vdots\\
+-\left(x_n^2+y_n^2\right)
+\end{bmatrix}_{ n \times 1}
+\end{equation}
+For distinct values of $x_i$ and $y_i$, the columns of $\mathbb{A}$ are all linearly independent, satisfying the condition for (\ref{eq1}).
+\section{General equation of a sphere}
+The procedure is similar for a sphere. The general equation of a sphere is
+\begin{equation}
+\left(x-x_0\right)^2 + \left(y-y_0\right)^2 + \left(z-z_0\right)^2= r^2
+\end{equation}
+where the center of the sphere is defined at $\left(x_0, y_0, z_0\right)$ and $r$ is its radius.
+Expansion yields
+\begin{equation}
+x^2 -2x x_0 +x_0^2 + y^2 -2y y_0 +y_0^2 + z^2 -2z z_0 +z_0^2= r^2,
+\end{equation}
+and rearranging yields
+\begin{equation}
+-2x x_0 -2y y_0 -2z z_0  +x_0^2 +y_0^2 +z_0^2 -r^2 = -\left(x^2 + y^2 + z^2\right),
+\end{equation}
+and the matrix-vector equation is now
+\begin{equation}
+\begin{bmatrix}
+\begin{array}{c c c c}
+-2x &-2y & -2z &+1
+\end{array}
+\end{bmatrix}
+\begin{bmatrix}
+x_0 \\ y_0 \\ z_0 \\ x_o^2 + y_0^2 +z_0^2 -r^2
+\end{bmatrix} = 
+\begin{bmatrix}
+-\left(x^2 + y^2 +z^2\right)
+\end{bmatrix}
+\end{equation}
+The matrices defining the least-squares solution are, therefore, 
+\begin{equation}
+\mathbb{A} = 
+\begin{bmatrix}
+\begin{array}{c c c c}
+-2x_1 &-2y_1 &-2z_1 &+1 \\
+-2x_2 &-2y_2 &-2z_2 &+1 \\
+-2x_3 &-2y_3 &-2z_3 &+1 \\
+\vdots	& \vdots & \vdots \\
+-2x_n &-2y_n &-2z_n &+1 \\
+\end{array}
+\end{bmatrix}_{ n \times 4}
+\end{equation}
+\begin{equation}
+\mathbf{x} = 
+\begin{bmatrix}
+x_0 \\ y_0 \\ z_0 \\ x_o^2 + y_0^2 + z_0^2 -r^2
+\end{bmatrix}_{ 4 \times 1}
+\end{equation}
+and 
+\begin{equation}
+\mathbf{y}=
+\begin{bmatrix}
+-\left(x_1^2+y_1^2+z_1^2\right)\\
+-\left(x_2^2+y_2^2+z_2^2\right)\\
+-\left(x_3^2+y_3^2+z_3^2\right)\\
+\vdots\\
+-\left(x_n^2+y_n^2+z_n^2\right)
+\end{bmatrix}_{ n \times 1}
+\end{equation}
+For distinct values of $x_i$, $y_i$, and $z_i$ the columns of $\mathbb{A}$ are all linearly independent, satisfying the condition for (\ref{eq1}).
+
+\section{Weighted Least-squares}
+Suppose each measurement is to be weighted. Define a weighting matrix as 
+\begin{equation}
+	\mathbb{W} = 
+	\begin{bmatrix}
+		\begin{array}{c c c c}
+			w_1 &0  & \ldots &0 \\
+			0 &w_2 & \ldots &0 \\
+			\vdots &  & \ddots & \vdots \\
+			0 & & \ldots & w_n \\
+		\end{array}
+	\end{bmatrix}_{n \times n}
+\end{equation}
+where each $w_i$ is applied to the $i^{th}$ measurement $y_i$.
+
+The normal equation for the weighted-least squares solution is now (see Ref.\cite{ref2})
+\begin{equation}
+	\left(\mathbb{W}\mathbb{A}\right)^T \mathbb{W}\mathbb{A} \mathbf{x}= \left(\mathbb{W}\mathbb{A}\right)^T \mathbb{W} \mathbf{y}, 
+\end{equation}
+and if the columns of $\mathbb{W}\mathbb{A}$ are linearly independent, then there   exists only one least-squares solution for $\mathbf{x}$
+\begin{thebibliography}{IEEEtran}
+	\bibitem{ref1}
+	D. C. Lay,								% author(s)
+	\textit{Linear Algebra and Its Applications, 3rd Edition},				% title
+	\textbf{Addison Wesley},				% publisher
+	Chapter 6.5,								% volume, edition, and page number
+	2003. 									% year
+	\bibitem{ref2}
+	D. C. Lay,								% author(s)
+	\textit{Linear Algebra and Its Applications, 3rd Edition},				% title
+	\textbf{Addison Wesley},				% publisher
+	Chapter 6.8,								% volume, edition, and page number
+	2003.
+%	
+%	\bibitem{ref2}
+%	Ogata,									% author(s)
+%	\textit{Modern Control Engineering},	% title
+%	\textbf{Prentice Hall},					% publisher
+%	2nd Edition, 							% volume, edition, and page number
+%	1990									% year
+\end{thebibliography}
+
+\end{document}
